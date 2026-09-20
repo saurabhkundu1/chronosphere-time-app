@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.worldclockapp"
+    namespace = "com.chronosphere.app"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.worldclockapp"
+        applicationId = "com.chronosphere.app"
         minSdk = 24
         targetSdk = 34
         versionCode = 1

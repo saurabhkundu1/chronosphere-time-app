@@ -22,15 +22,15 @@
         android:fillColor="#42a5f5"
         android:pathData="M62,55c-2.5,0 -4.5,2 -4.5,4.5s2,4.5 4.5,4.5s4.5,-2 4.5,-4.5S64.5,55 62,55z"/>
     
-    <!-- Clock hands -->
+    <!-- Clock hands forming a unique sphere pattern -->
     <path
         android:fillColor="#ffffff"
-        android:pathData="M54,54L54,38\"
+        android:pathData="M54,54L54,38"
         android:strokeWidth="2.5"
         android:strokeColor="#ffffff"/>
     <path
         android:fillColor="#ffca28"
-        android:pathData="M54,54L62,48\"
+        android:pathData="M54,54L62,48"
         android:strokeWidth="2"
         android:strokeColor="#ffca28"/>
     
@@ -39,8 +39,8 @@
         android:fillColor="#ffca28"
         android:pathData="M54,54m-3,0a3,3 0,1 1,6 0a3,3 0,1 1,-6 0"/>
     
-    <!-- Time zone markers -->
+    <!-- Time zone markers representing the 5 cities -->
     <path
         android:fillColor="#90caf9"
-        android:pathData="M54,22l0,4M54,82l0,-4M22,54l4,0M82,54l-4,0"/>
+        android:pathData="M54,22l0,4M54,82l0,-4M22,54l4,0M82,54l-4,0M38,38l3,3M70,70l-3,-3M38,70l3,-3M70,38l-3,3"/>
 </vector>

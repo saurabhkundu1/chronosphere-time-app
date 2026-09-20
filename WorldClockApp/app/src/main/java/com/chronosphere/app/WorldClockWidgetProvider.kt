@@ -1,4 +1,4 @@
-package com.example.worldclockapp
+package com.chronosphere.app
 
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
@@ -10,7 +10,7 @@ import java.util.*
 class WorldClockWidgetProvider : AppWidgetProvider() {
 
     companion object {
-        const val ACTION_UPDATE_WIDGET = "com.example.worldclockapp.ACTION_UPDATE_WIDGET"
+        const val ACTION_UPDATE_WIDGET = "com.chronosphere.app.ACTION_UPDATE_WIDGET"
         
         private val cities = listOf(
             "America/New_York" to "New York",

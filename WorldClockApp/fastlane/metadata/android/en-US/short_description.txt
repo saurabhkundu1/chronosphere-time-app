@@ -1,1 +1,1 @@
-Real-time world clock with 5 global cities and home screen widget support
+Beautiful real-time world clock showing 5 global cities with home screen widget support
