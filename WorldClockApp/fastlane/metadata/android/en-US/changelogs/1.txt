@@ -1,0 +1,9 @@
+Initial release of Applify World Clock
+
+Features:
+- Real-time clock display for 5 global cities (New York, London, Tokyo, Sydney, Dubai)
+- Home screen widget support
+- Beautiful Material Design 3 UI
+- Updates every second
+- Privacy-focused: no ads, no tracking
+- Open source

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.WorldClockApp" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="colorPrimary">#1a237e</item>
+        <item name="colorPrimaryVariant">#1a237e</item>
+        <item name="colorOnPrimary">#ffffff</item>
+        <item name="android:statusBarColor">#1a237e</item>
+    </style>
+</resources>

@@ -1,0 +1,45 @@
+```
+# Android build artifacts
+*.apk
+*.aar
+*.jar
+*.dex
+
+# Android build directories
+build/
+.externalNativeBuild/
+.intermediates/
+outputs/
+
+# Gradle
+.gradle/
+!gradle/wrapper/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Android Studio
+.idea/
+*.iml
+*.iws
+*.log
+
+# Generated files
+gen/
+out/
+
+# Debug & release folders
+debug/
+release/
+
+# Keystore
+*.keystore
+*.jks
+
+# Temporary files
+*.tmp
+*.temp
+```node_modules/
+.next/
+dist/
+node_modules/
