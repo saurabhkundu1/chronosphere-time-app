@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="8dp"
+    android:background="#1a237e">
+
+    <TextView
+        android:id="@+id/widgetTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="World Clock"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#ffffff"
+        android:gravity="center"
+        android:paddingBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/widgetCity1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="New York\n--:--:--"
+        android:textSize="14sp"
+        android:textColor="#ffffff"
+        android:gravity="center"
+        android:padding="6dp"
+        android:background="@drawable/city_card_background"
+        android:layout_marginBottom="4dp"/>
+
+    <TextView
+        android:id="@+id/widgetCity2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="London\n--:--:--"
+        android:textSize="14sp"
+        android:textColor="#ffffff"
+        android:gravity="center"
+        android:padding="6dp"
+        android:background="@drawable/city_card_background"
+        android:layout_marginBottom="4dp"/>
+
+    <TextView
+        android:id="@+id/widgetCity3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tokyo\n--:--:--"
+        android:textSize="14sp"
+        android:textColor="#ffffff"
+        android:gravity="center"
+        android:padding="6dp"
+        android:background="@drawable/city_card_background"
+        android:layout_marginBottom="4dp"/>
+
+    <TextView
+        android:id="@+id/widgetCity4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sydney\n--:--:--"
+        android:textSize="14sp"
+        android:textColor="#ffffff"
+        android:gravity="center"
+        android:padding="6dp"
+        android:background="@drawable/city_card_background"
+        android:layout_marginBottom="4dp"/>
+
+    <TextView
+        android:id="@+id/widgetCity5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Dubai\n--:--:--"
+        android:textSize="14sp"
+        android:textColor="#ffffff"
+        android:gravity="center"
+        android:padding="6dp"
+        android:background="@drawable/city_card_background"/>
+
+</LinearLayout>
