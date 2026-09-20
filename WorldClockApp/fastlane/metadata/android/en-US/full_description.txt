@@ -1,0 +1,14 @@
+Applify World Clock is a beautiful, real-time world clock application that displays the current time in 5 major cities around the globe: New York, London, Tokyo, Sydney, and Dubai.
+
+Key Features:
+• Real-time clock updates every second
+• Displays 5 global cities with their respective time zones
+• Beautiful card-based UI design
+• Home screen widget for quick access
+• Material Design 3 theme
+• No ads, no tracking - completely privacy-focused
+• Open source and free
+
+The app provides an intuitive interface showing each city's name, current time, and date. The home screen widget allows you to check world times without opening the app.
+
+Perfect for travelers, remote workers, or anyone with friends and family across different time zones.
