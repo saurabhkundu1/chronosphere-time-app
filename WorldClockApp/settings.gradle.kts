@@ -13,5 +13,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Applify"
+rootProject.name = "ChronoSphere"
 include(":app")

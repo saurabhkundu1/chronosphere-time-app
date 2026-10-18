@@ -1,15 +1,11 @@
-ChronoSphere is a beautiful, real-time world clock application that displays the current time in 5 major cities around the globe: New York, London, Tokyo, Sydney, and Dubai.
+ChronoSphere is an offline world clock for keeping track of the places that matter to you.
 
-Key Features:
-• Real-time clock updates every second
-• Displays 5 global cities with their respective time zones
-• Beautiful card-based Material Design UI
-• Home screen widget (2x4) for quick access
-• Modern blue globe logo with clock hands and timezone markers
-• No ads, no tracking - completely privacy-focused
-• No internet permissions required - works entirely offline
-• Open source under GPL v3 license
+• Add and save cities across the Americas, Europe, Africa, Asia, and Oceania.
+• Search the included time zone list and keep as many places as you need.
+• See each city's current local time, day, date, and time zone.
+• Remove places at any time; your list stays on this device.
+• Add the home screen widget to see up to five of your saved cities.
+• Tap the widget to open the app. The widget refreshes periodically and when you edit your list.
+• No account, network connection, ads, or tracking.
 
-The app provides an intuitive interface showing each city's name and current time with live updates. The home screen widget allows you to check world times without opening the app.
-
-Perfect for travelers, remote workers, or anyone with friends and family across different time zones.
+ChronoSphere uses Android time zone data, including daylight saving time changes. Your saved list never leaves this device.

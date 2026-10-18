@@ -1,45 +1,25 @@
-```
-# Android build artifacts
+# Android build outputs
 *.apk
+*.aab
 *.aar
-*.jar
 *.dex
+**/build/
+**/.gradle/
+**/.kotlin/
+**/.externalNativeBuild/
+**/.cxx/
 
-# Android build directories
-build/
-.externalNativeBuild/
-.intermediates/
-outputs/
-
-# Gradle
-.gradle/
-!gradle/wrapper/
-
-# Local configuration file (sdk path, etc)
-local.properties
-
-# Android Studio
-.idea/
+# Local IDE configuration
+**/local.properties
+**/.idea/
 *.iml
-*.iws
 *.log
 
-# Generated files
-gen/
-out/
-
-# Debug & release folders
-debug/
-release/
-
-# Keystore
-*.keystore
+# Signing keys and scratch files
 *.jks
-
-# Temporary files
+*.keystore
 *.tmp
 *.temp
-```node_modules/
-.next/
-dist/
-node_modules/
+
+# Keep the Gradle wrapper itself in source control.
+!WorldClockApp/gradle/wrapper/gradle-wrapper.jar

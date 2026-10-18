@@ -4,15 +4,15 @@ plugins {
 }
 
 android {
-    namespace = "com.chronosphere.app"
-    compileSdk = 34
+    namespace = "com.applify.chronosphere"
+    compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.chronosphere.app"
+        applicationId = "com.applify.chronosphere"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

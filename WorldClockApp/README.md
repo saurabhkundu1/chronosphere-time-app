@@ -1,21 +1,21 @@
 # ChronoSphere
 
-**A beautiful, real-time world clock application for Android with home screen widget support.**
+**An offline world clock for saving cities and checking their time from your home screen.**
 
-![License](https://img.shields.io/badge/license-GPL%20v3-blue.svg)
+![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)
 ![Platform](https://img.shields.io/badge/platform-Android-green.svg)
 ![API](https://img.shields.io/badge/API-24%2B-brightgreen.svg)
 ![Version](https://img.shields.io/badge/version-1.0-orange.svg)
 
 ## Features
 
-- 🌍 **5 Global Cities**: Real-time clocks for New York, London, Tokyo, Sydney, and Dubai
+- 🌍 **Saved Cities**: Search and add cities from time zones around the world
 - ⏱️ **Live Updates**: Time updates every second for accurate timekeeping
-- 📱 **Home Screen Widget**: Beautiful widget showing all 5 city times on your home screen
+- 📱 **Home Screen Widget**: Widget shows up to five saved cities
 - 🎨 **Modern Design**: Clean, card-based Material Design interface
 - 🔋 **Efficient**: Optimized battery usage with smart update mechanisms
 - 🔒 **Privacy-First**: No ads, no tracking, no internet permissions required
-- 🌐 **Open Source**: Free and open source under GPL v3
+- 🌐 **Open Source**: Free and open source under Apache License 2.0
 
 ## Screenshots
 
@@ -32,7 +32,7 @@ Screenshots will be available in the `fastlane/metadata/android/en-US/images/` d
 Coming soon to [F-Droid](https://f-droid.org/)
 
 ### GitHub Releases
-Download the latest APK from the [Releases](https://github.com/Applify/ChronoSphere/releases) page.
+Download the latest APK from the [Releases](https://github.com/saurabhkundu1/chronosphere-time-app/releases) page.
 
 ## Building from Source
 
@@ -45,8 +45,8 @@ Download the latest APK from the [Releases](https://github.com/Applify/ChronoSph
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/Applify/ChronoSphere.git
-cd ChronoSphere
+git clone https://github.com/saurabhkundu1/chronosphere-time-app.git
+cd chronosphere-time-app/WorldClockApp
 ```
 
 2. Open the project in Android Studio
@@ -101,9 +101,7 @@ fastlane/metadata/android/
    - Create a 1024x500px feature graphic
    - Save as `fastlane/metadata/android/en-US/images/featureGraphic.png`
 
-4. **Update Contact Info**:
-   - Edit `fastlane/metadata/android/contact.txt` with your GitHub URL
-   - Edit `fastlane/metadata/android/en-US/email.txt` with your email
+4. **Support**: Use the project's [GitHub issue tracker](https://github.com/saurabhkundu1/chronosphere-time-app/issues) for questions and bug reports.
 
 5. **Build Release APK**:
 ```bash
@@ -151,23 +149,19 @@ ChronoSphere does not collect, store, or transmit any personal data. The app wor
 ```
 Copyright 2024 Applify
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+Licensed under the Apache License, Version 2.0. You may obtain a copy
+of the License at https://www.apache.org/licenses/LICENSE-2.0.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ```
 
 ## Contact
 
-Project Link: [https://github.com/Applify/ChronoSphere](https://github.com/Applify/ChronoSphere)
+Project Link: [https://github.com/saurabhkundu1/chronosphere-time-app](https://github.com/saurabhkundu1/chronosphere-time-app)
 
 ---
 
