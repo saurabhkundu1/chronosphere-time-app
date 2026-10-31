@@ -3,6 +3,7 @@
 ## Unreleased
 - Upgrade the Gradle wrapper to 9.8.2 to satisfy Android lint's toolchain compatibility check.
 - Upgrade AGP to 9.5.0 to satisfy the current Android lint toolchain check.
+- Pin Kotlin Gradle Plugin 2.4.21 to remove Gradle 9 deprecation calls.
 - Install the AGP-matched NDK in CI to strip packaged native libraries cleanly.
 - Set the CI runner default Git branch to main to keep checkout output clean.
 - Serialize CI by branch and show Gradle deprecations with call stacks.
