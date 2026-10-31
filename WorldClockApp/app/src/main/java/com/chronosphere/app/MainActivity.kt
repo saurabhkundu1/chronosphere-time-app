@@ -18,6 +18,7 @@ import android.widget.ListView
 import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.edit
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.card.MaterialCardView
 import kotlinx.coroutines.Job
@@ -78,7 +79,7 @@ class MainActivity : AppCompatActivity() {
         .orEmpty()
 
     private fun saveCities(cities: List<String>) {
-        preferences.edit().putString(KEY_CITIES, cities.distinct().joinToString("|")).apply()
+        preferences.edit { putString(KEY_CITIES, cities.distinct().joinToString("|")) }
         renderCities()
         WorldClockWidgetProvider.refresh(this)
     }

@@ -3,6 +3,7 @@
 ## Unreleased
 - Upgrade the Gradle wrapper to 9.8.2 to satisfy Android lint's toolchain compatibility check.
 - Upgrade AGP to 9.5.0 to satisfy the current Android lint toolchain check.
+- Use the AndroidX SharedPreferences KTX editor to persist selected cities.
 - Enable resource shrinking alongside release minification.
 
 ## 1.2.0 - 2026-10-31
