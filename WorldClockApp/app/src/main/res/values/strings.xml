@@ -16,6 +16,9 @@
     <string name="date_device">%1$s · Your device</string>
     <string name="date_city">%1$s · %2$s</string>
     <string name="meeting_empty">Add a city to find shared working hours.</string>
+    <string name="meeting_add_calendar">Add to calendar</string>
+    <string name="meeting_event_title">Meeting across time zones</string>
+    <string name="meeting_calendar_unavailable">No calendar app is available.</string>
     <plurals name="meeting_best_overlap">
         <item quantity="one">Best overlap: %1$d of %2$d place is within 09:00–17:00 on a weekday. Showing the next %3$d half-hour windows.</item>
         <item quantity="other">Best overlap: %1$d of %2$d places are within 09:00–17:00 on a weekday. Showing the next %3$d half-hour windows.</item>

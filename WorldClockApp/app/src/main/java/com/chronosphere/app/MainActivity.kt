@@ -1,6 +1,9 @@
 package com.applify.chronosphere
 
 import android.app.AlertDialog
+import android.content.Intent
+import android.provider.CalendarContract
+import android.widget.Toast
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -265,6 +268,19 @@ class MainActivity : AppCompatActivity() {
                     text = cityTimes
                     textSize = 13f
                     setTextColor(getColor(R.color.chrono_muted))
+                })
+                slot.addView(Button(this).apply {
+                    text = getString(R.string.meeting_add_calendar)
+                    setOnClickListener {
+                        val intent = Intent(Intent.ACTION_INSERT, CalendarContract.Events.CONTENT_URI).apply {
+                            putExtra(CalendarContract.Events.TITLE, getString(R.string.meeting_event_title))
+                            putExtra(CalendarContract.Events.DESCRIPTION, cityTimes.replace("\n", "; "))
+                            putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, time)
+                            putExtra(CalendarContract.EXTRA_EVENT_END_TIME, time + 30 * 60_000L)
+                        }
+                        runCatching { startActivity(intent) }
+                            .onFailure { Toast.makeText(this@MainActivity, R.string.meeting_calendar_unavailable, Toast.LENGTH_SHORT).show() }
+                    }
                 })
                 content.addView(slot)
             }

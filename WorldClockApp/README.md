@@ -5,11 +5,12 @@
 ![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)
 ![Platform](https://img.shields.io/badge/platform-Android-green.svg)
 ![API](https://img.shields.io/badge/API-24%2B-brightgreen.svg)
-![Version](https://img.shields.io/badge/version-1.0-orange.svg)
+![Version](https://img.shields.io/badge/version-1.1.0-orange.svg)
 
 ## Features
 
 - 🌍 **Saved Cities**: Search and add cities from time zones around the world
+- 📅 **Meeting Planner**: Find overlapping work hours and add a suggested slot to your calendar
 - ⏱️ **Live Updates**: Time updates every second for accurate timekeeping
 - 📱 **Home Screen Widget**: Widget shows up to five saved cities
 - 🎨 **Modern Design**: Clean, card-based Material Design interface
