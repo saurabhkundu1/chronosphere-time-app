@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="chrono_background">#F3F6FA</color>
+    <color name="chrono_surface">#FFFFFF</color>
+    <color name="chrono_text">#152C42</color>
+    <color name="chrono_muted">#64788A</color>
+    <color name="chrono_accent">#1976A7</color>
+    <color name="chrono_hero">#173B5C</color>
+    <color name="chrono_hero_text">#FFFFFF</color>
+    <color name="chrono_hero_muted">#B9D5E7</color>
+    <color name="chrono_card_stroke">#DDE6ED</color>
+    <color name="chrono_card_time">#152C42</color>
+    <color name="chrono_card_date">#64788A</color>
+</resources>

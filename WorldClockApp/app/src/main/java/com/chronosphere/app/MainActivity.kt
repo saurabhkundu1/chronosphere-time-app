@@ -12,15 +12,18 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ListView
+import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.card.MaterialCardView
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Calendar
 import java.util.Locale
 import java.util.TimeZone
 
@@ -29,13 +32,18 @@ class MainActivity : AppCompatActivity() {
     private val timeViews = linkedMapOf<String, TextView>()
     private val dateViews = linkedMapOf<String, TextView>()
     private lateinit var cityContainer: LinearLayout
+    private lateinit var localTimeText: TextView
+    private lateinit var localDateText: TextView
     private var updateJob: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         cityContainer = findViewById(R.id.cityContainer)
+        localTimeText = findViewById(R.id.localTimeText)
+        localDateText = findViewById(R.id.localDateText)
         findViewById<Button>(R.id.addCityButton).setOnClickListener { showCityPicker() }
+        findViewById<Button>(R.id.meetingPlannerButton).setOnClickListener { showMeetingPlanner() }
         ensureDefaultCities()
         renderCities()
         updateJob = lifecycleScope.launch {
@@ -49,6 +57,7 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         refreshTimes()
+        WorldClockWidgetProvider.refresh(this)
     }
 
     override fun onDestroy() {
@@ -77,46 +86,56 @@ class MainActivity : AppCompatActivity() {
         timeViews.clear()
         dateViews.clear()
         cities().forEach { zoneId ->
-            val card = LinearLayout(this).apply {
-                orientation = LinearLayout.HORIZONTAL
-                gravity = Gravity.CENTER_VERTICAL
-                setPadding(dp(16), dp(12), dp(12), dp(12))
-                setBackgroundResource(R.drawable.city_card_background)
+            val card = MaterialCardView(this).apply {
+                radius = dp(20).toFloat()
+                cardElevation = dp(1).toFloat()
+                setCardBackgroundColor(getColor(R.color.chrono_surface))
+                strokeColor = getColor(R.color.chrono_card_stroke)
+                strokeWidth = dp(1)
                 layoutParams = LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT
                 ).apply { bottomMargin = dp(10) }
             }
+            val row = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                setPadding(dp(16), dp(14), dp(10), dp(14))
+                minimumHeight = dp(92)
+            }
             val details = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
             val cityLabel = TextView(this).apply {
                 text = cityName(zoneId)
                 textSize = 17f
-                setTextColor(getColor(android.R.color.white))
+                setTextColor(getColor(R.color.chrono_text))
                 setTypeface(typeface, android.graphics.Typeface.BOLD)
             }
             val timeLabel = TextView(this).apply {
-                textSize = 26f
-                setTextColor(getColor(android.R.color.white))
+                textSize = 29f
+                gravity = Gravity.END or Gravity.CENTER_VERTICAL
+                setTextColor(getColor(R.color.chrono_card_time))
                 setTypeface(typeface, android.graphics.Typeface.BOLD)
             }
             val dateLabel = TextView(this).apply {
-                textSize = 13f
-                setTextColor(0xFFCFD8FF.toInt())
+                textSize = 12f
+                setTextColor(getColor(R.color.chrono_card_date))
+                setPadding(0, dp(4), 0, 0)
             }
             details.addView(cityLabel)
-            details.addView(timeLabel)
             details.addView(dateLabel)
-            card.addView(details, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+            row.addView(details, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+            row.addView(timeLabel, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
             val remove = TextView(this).apply {
                 text = "×"
                 contentDescription = "Remove ${cityName(zoneId)}"
-                textSize = 28f
+                textSize = 23f
                 gravity = Gravity.CENTER
-                setTextColor(getColor(android.R.color.white))
-                setPadding(dp(12), dp(4), dp(4), dp(4))
+                setTextColor(getColor(R.color.chrono_muted))
+                setPadding(dp(10), dp(6), dp(4), dp(6))
                 setOnClickListener { saveCities(cities().filterNot { it == zoneId }) }
             }
-            card.addView(remove)
+            row.addView(remove)
+            card.addView(row)
             cityContainer.addView(card)
             timeViews[zoneId] = timeLabel
             dateViews[zoneId] = dateLabel
@@ -128,15 +147,20 @@ class MainActivity : AppCompatActivity() {
 
     private fun refreshTimes() {
         val now = Date()
-        val timePattern = if (DateFormat.is24HourFormat(this)) "HH:mm:ss" else "h:mm:ss a"
+        val timePattern = if (DateFormat.is24HourFormat(this)) "HH:mm" else "h:mm a"
         val timeFormatter = SimpleDateFormat(timePattern, Locale.getDefault())
         val dateFormatter = SimpleDateFormat("EEE, d MMM · z", Locale.getDefault())
+        val localZone = TimeZone.getDefault()
+        timeFormatter.timeZone = localZone
+        dateFormatter.timeZone = localZone
+        localTimeText.text = timeFormatter.format(now)
+        localDateText.text = getString(R.string.date_device, dateFormatter.format(now))
         cities().forEach { zoneId ->
             val zone = TimeZone.getTimeZone(zoneId)
             timeFormatter.timeZone = zone
             dateFormatter.timeZone = zone
             timeViews[zoneId]?.text = timeFormatter.format(now)
-            dateViews[zoneId]?.text = "${dateFormatter.format(now)}  ·  ${zoneId.replace('_', ' ')}"
+            dateViews[zoneId]?.text = getString(R.string.date_city, dateFormatter.format(now), zoneId.replace('_', ' '))
         }
     }
 
@@ -178,6 +202,85 @@ class MainActivity : AppCompatActivity() {
             dialog.dismiss()
         }
         dialog.show()
+    }
+
+    private fun showMeetingPlanner() {
+        val zones = (listOf(TimeZone.getDefault().id) + cities()).distinct()
+        val firstSlot = Calendar.getInstance().apply {
+            timeInMillis = System.currentTimeMillis()
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+            val minutesToNextQuarter = (15 - get(Calendar.MINUTE) % 15) % 15
+            add(Calendar.MINUTE, if (minutesToNextQuarter == 0) 15 else minutesToNextQuarter)
+        }
+        val candidates = (0 until 14 * 96).mapNotNull { index ->
+            val time = firstSlot.timeInMillis + index * 15 * 60_000L
+            val overlap = zones.count { isWorkingTime(time, TimeZone.getTimeZone(it)) }
+            if (overlap > 0) time to overlap else null
+        }
+        val bestOverlap = candidates.maxOfOrNull { it.second } ?: 0
+        val best = candidates.filter { it.second == bestOverlap }.fold(mutableListOf<Pair<Long, Int>>()) { slots, candidate ->
+            if (slots.size < 5 && slots.none { candidate.first - it.first < 30 * 60_000L }) slots.add(candidate)
+            slots
+        }
+        val content = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(20), dp(8), dp(20), dp(8))
+        }
+        val timePattern = if (DateFormat.is24HourFormat(this)) "EEE, d MMM · HH:mm" else "EEE, d MMM · h:mm a"
+        val formatter = SimpleDateFormat(timePattern, Locale.getDefault()).apply {
+            timeZone = TimeZone.getDefault()
+        }
+        if (best.isEmpty()) {
+            content.addView(TextView(this).apply { text = getString(R.string.meeting_empty) })
+        } else {
+            content.addView(TextView(this).apply {
+                text = resources.getQuantityString(R.plurals.meeting_best_overlap, zones.size, bestOverlap, zones.size, best.size)
+                textSize = 14f
+                setTextColor(getColor(R.color.chrono_text))
+                setPadding(0, 0, 0, dp(12))
+            })
+            best.forEach { (time, overlap) ->
+                val slot = LinearLayout(this).apply {
+                    orientation = LinearLayout.VERTICAL
+                    setPadding(0, dp(8), 0, dp(10))
+                }
+                slot.addView(TextView(this).apply {
+                    text = resources.getQuantityString(R.plurals.meeting_slot, overlap, formatter.format(Date(time)), overlap, zones.size)
+                    textSize = 16f
+                    setTypeface(typeface, android.graphics.Typeface.BOLD)
+                    setTextColor(getColor(R.color.chrono_accent))
+                })
+                val cityTimes = zones.joinToString("\n") { zoneId ->
+                    val zone = TimeZone.getTimeZone(zoneId)
+                    val cityFormatter = SimpleDateFormat("HH:mm", Locale.getDefault()).apply { timeZone = zone }
+                    val label = if (zoneId == TimeZone.getDefault().id) "You" else cityName(zoneId)
+                    getString(
+                        if (isWorkingTime(time, zone)) R.string.meeting_city_time_work else R.string.meeting_city_time,
+                        label,
+                        cityFormatter.format(Date(time)),
+                    )
+                }
+                slot.addView(TextView(this).apply {
+                    text = cityTimes
+                    textSize = 13f
+                    setTextColor(getColor(R.color.chrono_muted))
+                })
+                content.addView(slot)
+            }
+        }
+        AlertDialog.Builder(this)
+            .setTitle("Meeting planner")
+            .setView(ScrollView(this).apply { addView(content) })
+            .setNegativeButton("Close", null)
+            .show()
+    }
+
+    private fun isWorkingTime(timestamp: Long, zone: TimeZone): Boolean {
+        val local = Calendar.getInstance(zone).apply { timeInMillis = timestamp }
+        val weekday = local.get(Calendar.DAY_OF_WEEK) !in listOf(Calendar.SATURDAY, Calendar.SUNDAY)
+        val minutes = local.get(Calendar.HOUR_OF_DAY) * 60 + local.get(Calendar.MINUTE)
+        return weekday && minutes >= 9 * 60 && minutes + 30 <= 17 * 60
     }
 
     private fun cityName(zoneId: String): String = zoneId.substringAfterLast('/').replace('_', ' ')

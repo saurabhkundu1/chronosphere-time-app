@@ -2,4 +2,28 @@
 <resources>
     <string name="app_name">ChronoSphere</string>
     <string name="widget_label">ChronoSphere world clock</string>
+    <string name="brand_label">CHRONOSPHERE / WORLD CLOCK</string>
+    <string name="hero_title">World time,\nin your orbit.</string>
+    <string name="local_time_title">YOUR LOCAL TIME</string>
+    <string name="time_placeholder">--:--</string>
+    <string name="saved_places_title">Saved places</string>
+    <string name="saved_places_subtitle">Local time, wherever life takes you</string>
+    <string name="add_city">＋ Add city</string>
+    <string name="meeting_planner">Find a meeting time</string>
+    <string name="empty_clock">Your clock is empty. Add a city to get started.</string>
+    <string name="widget_brand">CHRONOSPHERE · WORLD CLOCK</string>
+    <string name="widget_city_time">%1$s\n%2$s</string>
+    <string name="date_device">%1$s · Your device</string>
+    <string name="date_city">%1$s · %2$s</string>
+    <string name="meeting_empty">Add a city to find shared working hours.</string>
+    <plurals name="meeting_best_overlap">
+        <item quantity="one">Best overlap: %1$d of %2$d place is within 09:00–17:00 on a weekday. Showing the next %3$d half-hour windows.</item>
+        <item quantity="other">Best overlap: %1$d of %2$d places are within 09:00–17:00 on a weekday. Showing the next %3$d half-hour windows.</item>
+    </plurals>
+    <plurals name="meeting_slot">
+        <item quantity="one">%1$s · %2$d of %3$d place has working hours</item>
+        <item quantity="other">%1$s · %2$d of %3$d places have working hours</item>
+    </plurals>
+    <string name="meeting_city_time_work">%1$s: %2$s · work hours</string>
+    <string name="meeting_city_time">%1$s: %2$s</string>
 </resources>
