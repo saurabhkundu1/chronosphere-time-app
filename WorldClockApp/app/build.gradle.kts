@@ -4,12 +4,12 @@ plugins {
 
 android {
     namespace = "com.applify.chronosphere"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.applify.chronosphere"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 3
         versionName = "1.2.0"
 
