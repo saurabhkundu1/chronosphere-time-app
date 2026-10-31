@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+- Upgrade the Gradle wrapper to 9.8.2 to satisfy Android lint's toolchain compatibility check.
+
 ## 1.2.0 - 2026-10-31
 - Update Android Gradle, Kotlin, Android SDK, and library versions to current stable releases.
 - Migrate to AGP built-in Kotlin and target Android 17 (API 37).
