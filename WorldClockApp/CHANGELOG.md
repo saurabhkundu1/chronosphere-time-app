@@ -2,6 +2,7 @@
 
 ## Unreleased
 - Upgrade the Gradle wrapper to 9.8.2 to satisfy Android lint's toolchain compatibility check.
+- Enable resource shrinking alongside release minification.
 
 ## 1.2.0 - 2026-10-31
 - Update Android Gradle, Kotlin, Android SDK, and library versions to current stable releases.
