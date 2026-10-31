@@ -33,5 +33,5 @@ jobs:
           "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-37.2" "build-tools;37.0.0" "ndk;28.2.13676358"
       - name: Lint, test, and build
         working-directory: WorldClockApp
-        run: bash ./gradlew --no-daemon --warning-mode=all :app:lintDebug :app:testDebugUnitTest :app:assembleDebug
+        run: bash ./gradlew --no-daemon --warning-mode=all --stacktrace :app:lintDebug :app:testDebugUnitTest :app:assembleDebug
 

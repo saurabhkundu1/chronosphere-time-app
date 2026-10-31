@@ -5,7 +5,7 @@
 - Upgrade AGP to 9.5.0 to satisfy the current Android lint toolchain check.
 - Install the AGP-matched NDK in CI to strip packaged native libraries cleanly.
 - Set the CI runner default Git branch to main to keep checkout output clean.
-- Serialize CI by branch and show full Gradle deprecation diagnostics.
+- Serialize CI by branch and show Gradle deprecations with call stacks.
 - Use the AndroidX SharedPreferences KTX editor to persist selected cities.
 - Enable resource shrinking alongside release minification.
 
