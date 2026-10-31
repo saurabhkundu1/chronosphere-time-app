@@ -2,7 +2,7 @@
 
 ## 1.2.0 - 2026-10-31
 - Update Android Gradle, Kotlin, Android SDK, and library versions to current stable releases.
-- Migrate to AGP built-in Kotlin and target Android 17.
+- Migrate to AGP built-in Kotlin and target Android 16 (API 36).
 - Add push-triggered CI for lint, unit tests, and debug builds.
 
 ## 1.1.0 - 2026-10-31
