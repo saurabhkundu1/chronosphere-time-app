@@ -1,30 +1,27 @@
 # ChronoSphere
 
-ChronoSphere is an Android world clock for saving cities and comparing their local times. Add the **ChronoSphere** widget to your home screen to keep up to five saved clocks visible at a glance.
+ChronoSphere is an offline world clock for saving cities, comparing local times, and keeping up to five clocks on a home-screen widget.
 
-## Features
-
-- Search and save cities from a curated list of world time zones.
-- View each city's local time, date, and time-zone name.
-- Remove saved cities at any time; the selection persists on the device.
-- Use the home-screen widget to show the first five saved cities.
-- Works offline and follows the device's 12-hour or 24-hour time preference.
+- Search and save cities from world time zones.
+- See local time, date, and time-zone name.
+- Find overlapping work hours and add a suggested meeting time to your calendar.
+- Follow the device's 12- or 24-hour clock preference.
 
 ## Build
 
-Open [`WorldClockApp`](WorldClockApp/) in Android Studio, or run the Gradle wrapper:
+Open [`WorldClockApp`](WorldClockApp/) in Android Studio, or run:
 
-```bash
+```powershell
 cd WorldClockApp
 ./gradlew assembleDebug
 ```
 
-On Windows, use `gradlew.bat assembleDebug`. The app requires Android 7.0 (API 24) or later.
+On Windows, use `gradlew.bat assembleDebug`. The app supports Android 7 (API 24) and newer. The current source version is `1.2.0` (`versionCode` 3).
 
-## Release
+## Releases and Droidify
 
-The initial release is version `1.0.0` (`versionCode` 1). Release APK signing keys are kept outside this source repository.
+Push a `vMAJOR.MINOR.PATCH` tag to build and sign the APK, publish it on [GitHub Releases](https://github.com/saurabhkundu1/chronosphere-time-app/releases), and send it to [Applify](https://saurabhkundu1.github.io/Applify/) for the Droidify-compatible repository. Release signing uses the existing app key; configure the repository's `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`, and `APPLIFY_DISPATCH_TOKEN` secrets before tagging.
 
-## License and support
+## Privacy and license
 
-The app is licensed under [Apache License 2.0](WorldClockApp/LICENSE). For support, use the [GitHub issue tracker](https://github.com/saurabhkundu1/chronosphere-time-app/issues).
+ChronoSphere works offline and does not request internet access. It is licensed under [Apache License 2.0](WorldClockApp/LICENSE). Report problems in the [issue tracker](https://github.com/saurabhkundu1/chronosphere-time-app/issues).
