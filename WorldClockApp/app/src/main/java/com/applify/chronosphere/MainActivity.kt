@@ -1,6 +1,7 @@
 package com.applify.chronosphere
 
 import android.app.AlertDialog
+import android.app.TimePickerDialog
 import android.content.Intent
 import android.provider.CalendarContract
 import android.widget.Toast
@@ -19,12 +20,15 @@ import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.card.MaterialCardView
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Calendar
@@ -35,6 +39,7 @@ class MainActivity : AppCompatActivity() {
     private val preferences by lazy { getSharedPreferences(PREFERENCES, MODE_PRIVATE) }
     private val timeViews = linkedMapOf<String, TextView>()
     private val dateViews = linkedMapOf<String, TextView>()
+    private val differenceViews = linkedMapOf<String, TextView>()
     private lateinit var cityContainer: LinearLayout
     private lateinit var localTimeText: TextView
     private lateinit var localDateText: TextView
@@ -51,9 +56,11 @@ class MainActivity : AppCompatActivity() {
         ensureDefaultCities()
         renderCities()
         updateJob = lifecycleScope.launch {
-            while (isActive) {
-                refreshTimes()
-                delay(1_000)
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                while (isActive) {
+                    refreshTimes()
+                    delay(1_000)
+                }
             }
         }
     }
@@ -89,6 +96,7 @@ class MainActivity : AppCompatActivity() {
         cityContainer.removeAllViews()
         timeViews.clear()
         dateViews.clear()
+        differenceViews.clear()
         cities().forEach { zoneId ->
             val card = MaterialCardView(this).apply {
                 radius = dp(20).toFloat()
@@ -125,8 +133,13 @@ class MainActivity : AppCompatActivity() {
                 setTextColor(getColor(R.color.chrono_card_date))
                 setPadding(0, dp(4), 0, 0)
             }
+            val differenceLabel = TextView(this).apply {
+                textSize = 12f
+                setTextColor(getColor(R.color.chrono_muted))
+            }
             details.addView(cityLabel)
             details.addView(dateLabel)
+            details.addView(differenceLabel)
             row.addView(details, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
             row.addView(timeLabel, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
             val remove = TextView(this).apply {
@@ -143,6 +156,7 @@ class MainActivity : AppCompatActivity() {
             cityContainer.addView(card)
             timeViews[zoneId] = timeLabel
             dateViews[zoneId] = dateLabel
+            differenceViews[zoneId] = differenceLabel
         }
         findViewById<TextView>(R.id.emptyMessage)?.visibility =
             if (cities().isEmpty()) android.view.View.VISIBLE else android.view.View.GONE
@@ -165,7 +179,26 @@ class MainActivity : AppCompatActivity() {
             dateFormatter.timeZone = zone
             timeViews[zoneId]?.text = timeFormatter.format(now)
             dateViews[zoneId]?.text = getString(R.string.date_city, dateFormatter.format(now), zoneId.replace('_', ' '))
+            val differenceMinutes = TimeDifferenceFormatter.minutesBetween(zone, localZone, now.time)
+            differenceViews[zoneId]?.text = timeDifferenceLabel(differenceMinutes)
         }
+    }
+
+    private fun timeDifferenceLabel(minutes: Int): String {
+        if (minutes == 0) return getString(R.string.time_difference_same)
+
+        val absoluteMinutes = kotlin.math.abs(minutes)
+        val hours = absoluteMinutes / 60
+        val remainingMinutes = absoluteMinutes % 60
+        val amount = when {
+            hours == 0 -> getString(R.string.time_difference_minutes, remainingMinutes)
+            remainingMinutes == 0 -> getString(R.string.time_difference_hours, hours)
+            else -> getString(R.string.time_difference_hours_minutes, hours, remainingMinutes)
+        }
+        return getString(
+            if (minutes > 0) R.string.time_difference_ahead else R.string.time_difference_behind,
+            amount,
+        )
     }
 
     private fun showCityPicker() {
@@ -210,6 +243,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun showMeetingPlanner() {
         val zones = (listOf(TimeZone.getDefault().id) + cities()).distinct()
+        val (workStart, workEnd) = workingHours()
+        val duration = meetingDuration()
+        val workDays = workingDays()
         val firstSlot = Calendar.getInstance().apply {
             timeInMillis = System.currentTimeMillis()
             set(Calendar.SECOND, 0)
@@ -219,12 +255,12 @@ class MainActivity : AppCompatActivity() {
         }
         val candidates = (0 until 14 * 96).mapNotNull { index ->
             val time = firstSlot.timeInMillis + index * 15 * 60_000L
-            val overlap = zones.count { isWorkingTime(time, TimeZone.getTimeZone(it)) }
+            val overlap = zones.count { isWorkingTime(time, TimeZone.getTimeZone(it), workStart, workEnd, duration, workDays) }
             if (overlap > 0) time to overlap else null
         }
         val bestOverlap = candidates.maxOfOrNull { it.second } ?: 0
         val best = candidates.filter { it.second == bestOverlap }.fold(mutableListOf<Pair<Long, Int>>()) { slots, candidate ->
-            if (slots.size < 5 && slots.none { candidate.first - it.first < 30 * 60_000L }) slots.add(candidate)
+            if (slots.size < 5 && slots.none { candidate.first - it.first < duration * 60_000L }) slots.add(candidate)
             slots
         }
         val content = LinearLayout(this).apply {
@@ -235,11 +271,48 @@ class MainActivity : AppCompatActivity() {
         val formatter = SimpleDateFormat(timePattern, Locale.getDefault()).apply {
             timeZone = TimeZone.getDefault()
         }
+        var plannerDialog: AlertDialog? = null
+        content.addView(Button(this).apply {
+            text = getString(R.string.meeting_work_hours, formatMinuteOfDay(workStart), formatMinuteOfDay(workEnd))
+            setOnClickListener {
+                showWorkHoursPicker {
+                    plannerDialog?.dismiss()
+                    showMeetingPlanner()
+                }
+            }
+        })
+        content.addView(Button(this).apply {
+            text = getString(R.string.meeting_duration_value, duration)
+            setOnClickListener {
+                showMeetingDurationPicker {
+                    plannerDialog?.dismiss()
+                    showMeetingPlanner()
+                }
+            }
+        })
+        content.addView(Button(this).apply {
+            text = getString(R.string.meeting_work_days_value, workDays.sorted().joinToString { weekdayName(it) })
+            setOnClickListener {
+                showWorkDaysPicker {
+                    plannerDialog?.dismiss()
+                    showMeetingPlanner()
+                }
+            }
+        })
         if (best.isEmpty()) {
             content.addView(TextView(this).apply { text = getString(R.string.meeting_empty) })
         } else {
             content.addView(TextView(this).apply {
-                text = resources.getQuantityString(R.plurals.meeting_best_overlap, zones.size, bestOverlap, zones.size, best.size)
+                text = resources.getQuantityString(
+                    R.plurals.meeting_best_overlap,
+                    zones.size,
+                    bestOverlap,
+                    zones.size,
+                    formatMinuteOfDay(workStart),
+                    formatMinuteOfDay(workEnd),
+                    best.size,
+                    duration,
+                )
                 textSize = 14f
                 setTextColor(getColor(R.color.chrono_text))
                 setPadding(0, 0, 0, dp(12))
@@ -255,13 +328,13 @@ class MainActivity : AppCompatActivity() {
                     setTypeface(typeface, android.graphics.Typeface.BOLD)
                     setTextColor(getColor(R.color.chrono_accent))
                 })
+                val cityTimePattern = if (DateFormat.is24HourFormat(this)) "EEE, d MMM yyyy · HH:mm" else "EEE, d MMM yyyy · h:mm a"
                 val cityTimes = zones.joinToString("\n") { zoneId ->
                     val zone = TimeZone.getTimeZone(zoneId)
-                    val cityFormatter = SimpleDateFormat("HH:mm", Locale.getDefault()).apply { timeZone = zone }
-                    val label = if (zoneId == TimeZone.getDefault().id) "You" else cityName(zoneId)
+                    val cityFormatter = SimpleDateFormat(cityTimePattern, Locale.getDefault()).apply { timeZone = zone }
                     getString(
-                        if (isWorkingTime(time, zone)) R.string.meeting_city_time_work else R.string.meeting_city_time,
-                        label,
+                        if (isWorkingTime(time, zone, workStart, workEnd, duration, workDays)) R.string.meeting_city_time_work else R.string.meeting_city_time,
+                        cityName(zoneId),
                         cityFormatter.format(Date(time)),
                     )
                 }
@@ -277,28 +350,129 @@ class MainActivity : AppCompatActivity() {
                             putExtra(CalendarContract.Events.TITLE, getString(R.string.meeting_event_title))
                             putExtra(CalendarContract.Events.DESCRIPTION, cityTimes.replace("\n", "; "))
                             putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, time)
-                            putExtra(CalendarContract.EXTRA_EVENT_END_TIME, time + 30 * 60_000L)
+                            putExtra(CalendarContract.EXTRA_EVENT_END_TIME, time + duration * 60_000L)
                         }
                         runCatching { startActivity(intent) }
                             .onFailure { Toast.makeText(this@MainActivity, R.string.meeting_calendar_unavailable, Toast.LENGTH_SHORT).show() }
                     }
                 })
+                slot.addView(Button(this).apply {
+                    text = getString(R.string.meeting_share_time)
+                    setOnClickListener {
+                        val share = Intent(Intent.ACTION_SEND).apply {
+                            type = "text/plain"
+                            putExtra(Intent.EXTRA_SUBJECT, getString(R.string.meeting_event_title))
+                            putExtra(Intent.EXTRA_TEXT, getString(R.string.meeting_share_text, duration, cityTimes))
+                        }
+                        startActivity(Intent.createChooser(share, getString(R.string.meeting_share_chooser)))
+                    }
+                })
                 content.addView(slot)
             }
         }
-        AlertDialog.Builder(this)
+        plannerDialog = AlertDialog.Builder(this)
             .setTitle("Meeting planner")
             .setView(ScrollView(this).apply { addView(content) })
             .setNegativeButton("Close", null)
+            .create()
+        plannerDialog?.show()
+    }
+
+    private fun showWorkHoursPicker(onSaved: () -> Unit) {
+        val (workStart, workEnd) = workingHours()
+        TimePickerDialog(this, { _, startHour, startMinute ->
+            val start = startHour * 60 + startMinute
+            TimePickerDialog(this, { _, endHour, endMinute ->
+                val end = endHour * 60 + endMinute
+                val window = (end - start + 24 * 60) % (24 * 60)
+                if (window < MINIMUM_WORK_WINDOW_MINUTES) {
+                    Toast.makeText(this, R.string.meeting_hours_invalid, Toast.LENGTH_SHORT).show()
+                    return@TimePickerDialog
+                }
+                preferences.edit {
+                    putInt(KEY_WORK_START, start)
+                    putInt(KEY_WORK_END, end)
+                }
+                onSaved()
+            }, workEnd / 60, workEnd % 60, DateFormat.is24HourFormat(this)).show()
+        }, workStart / 60, workStart % 60, DateFormat.is24HourFormat(this)).show()
+    }
+
+    private fun showMeetingDurationPicker(onSaved: () -> Unit) {
+        val durations = MEETING_DURATIONS
+        AlertDialog.Builder(this)
+            .setTitle(R.string.meeting_duration_title)
+            .setSingleChoiceItems(
+                durations.map { resources.getQuantityString(R.plurals.meeting_duration_option, it, it) }.toTypedArray(),
+                durations.indexOf(meetingDuration()),
+            ) { dialog, which ->
+                durations.getOrNull(which)?.let { duration ->
+                    preferences.edit { putInt(KEY_MEETING_DURATION, duration) }
+                    dialog.dismiss()
+                    onSaved()
+                }
+            }
+            .setNegativeButton(android.R.string.cancel, null)
             .show()
     }
 
-    private fun isWorkingTime(timestamp: Long, zone: TimeZone): Boolean {
-        val local = Calendar.getInstance(zone).apply { timeInMillis = timestamp }
-        val weekday = local.get(Calendar.DAY_OF_WEEK) !in listOf(Calendar.SATURDAY, Calendar.SUNDAY)
-        val minutes = local.get(Calendar.HOUR_OF_DAY) * 60 + local.get(Calendar.MINUTE)
-        return weekday && minutes >= 9 * 60 && minutes + 30 <= 17 * 60
+    private fun showWorkDaysPicker(onSaved: () -> Unit) {
+        val days = (Calendar.SUNDAY..Calendar.SATURDAY).toList()
+        val selected = workingDays()
+        val checked = BooleanArray(days.size) { days[it] in selected }
+        val dialog = AlertDialog.Builder(this)
+            .setTitle(R.string.meeting_work_days_title)
+            .setMultiChoiceItems(days.map(::weekdayName).toTypedArray(), checked) { _, which, isChecked ->
+                checked[which] = isChecked
+            }
+            .setPositiveButton(android.R.string.ok, null)
+            .setNegativeButton(android.R.string.cancel, null)
+            .create()
+        dialog.setOnShowListener {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                val workDays = days.filterIndexed { index, _ -> checked[index] }.toSet()
+                if (workDays.isEmpty()) {
+                    Toast.makeText(this, R.string.meeting_work_days_empty, Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+                preferences.edit {
+                    putStringSet(KEY_WORK_DAYS, workDays.map { it.toString() }.toSet())
+                }
+                dialog.dismiss()
+                onSaved()
+            }
+        }
+        dialog.show()
     }
+
+    private fun meetingDuration() = preferences.getInt(KEY_MEETING_DURATION, DEFAULT_MEETING_DURATION)
+        .takeIf { it in MEETING_DURATIONS } ?: DEFAULT_MEETING_DURATION
+
+    private fun workingDays(): Set<Int> = preferences.getStringSet(KEY_WORK_DAYS, null)
+        ?.mapNotNull { it.toIntOrNull() }
+        ?.filter { it in Calendar.SUNDAY..Calendar.SATURDAY }
+        ?.toSet()
+        ?.takeIf { it.isNotEmpty() }
+        ?: DEFAULT_WORK_DAYS
+
+    private fun weekdayName(day: Int) = DateFormatSymbols.getInstance(Locale.getDefault()).weekdays[day]
+
+    private fun workingHours(): Pair<Int, Int> {
+        val start = preferences.getInt(KEY_WORK_START, DEFAULT_WORK_START)
+        val end = preferences.getInt(KEY_WORK_END, DEFAULT_WORK_END)
+        val window = (end - start + 24 * 60) % (24 * 60)
+        return if (start in 0 until 24 * 60 && end in 0 until 24 * 60 && window >= MINIMUM_WORK_WINDOW_MINUTES) {
+            start to end
+        } else {
+            DEFAULT_WORK_START to DEFAULT_WORK_END
+        }
+    }
+
+    private fun formatMinuteOfDay(minutes: Int): String = SimpleDateFormat(
+        if (DateFormat.is24HourFormat(this)) "HH:mm" else "h:mm a",
+        Locale.getDefault(),
+    ).apply { timeZone = TimeZone.getTimeZone("UTC") }
+        .format(Date(minutes * 60_000L))
 
     private fun cityName(zoneId: String): String = zoneId.substringAfterLast('/').replace('_', ' ')
         .replace("St Kitts", "St. Kitts")
@@ -308,6 +482,15 @@ class MainActivity : AppCompatActivity() {
     companion object {
         const val PREFERENCES = "world_clock_preferences"
         const val KEY_CITIES = "saved_time_zones"
+        private const val KEY_WORK_START = "meeting_work_start"
+        private const val KEY_WORK_END = "meeting_work_end"
+        private const val KEY_MEETING_DURATION = "meeting_duration"
+        private const val KEY_WORK_DAYS = "meeting_work_days"
+        private const val DEFAULT_WORK_START = 9 * 60
+        private const val DEFAULT_WORK_END = 17 * 60
+        private const val MINIMUM_WORK_WINDOW_MINUTES = 30
+        private const val DEFAULT_MEETING_DURATION = 30
+        private val MEETING_DURATIONS = listOf(15, 30, 60)
         val DEFAULT_CITIES = listOf(
             "America/New_York", "Europe/London", "Asia/Tokyo", "Australia/Sydney", "Asia/Dubai"
         )

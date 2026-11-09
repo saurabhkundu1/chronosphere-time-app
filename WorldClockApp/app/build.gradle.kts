@@ -10,8 +10,8 @@ android {
         applicationId = "com.applify.chronosphere"
         minSdk = 24
         targetSdk = 37
-        versionCode = 3
-        versionName = "1.2.0"
+        versionCode = 9
+        versionName = "1.8.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -32,6 +32,7 @@ android {
     }
     lint {
         warningsAsErrors = true
+        disable += "AndroidGradlePluginVersion"
     }
 }
 
