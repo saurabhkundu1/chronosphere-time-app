@@ -1,5 +1,7 @@
 # ChronoSphere
 
+[![Deploy F-Droid Repo](https://github.com/saurabhkundu1/Chronosphere/actions/workflows/deploy-fdroid-pages.yml/badge.svg)](https://github.com/saurabhkundu1/Chronosphere/actions/workflows/deploy-fdroid-pages.yml)
+
 ChronoSphere is an offline world clock for saving cities, comparing local times, and keeping up to five clocks on a home-screen widget.
 
 - Search and save cities from world time zones.
