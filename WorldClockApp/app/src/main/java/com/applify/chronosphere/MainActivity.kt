@@ -37,6 +37,7 @@ import java.util.TimeZone
 
 class MainActivity : AppCompatActivity() {
     private val preferences by lazy { getSharedPreferences(PREFERENCES, MODE_PRIVATE) }
+    private val viewModel by lazy { WorldClockViewModel(application) }
     private val timeViews = linkedMapOf<String, TextView>()
     private val dateViews = linkedMapOf<String, TextView>()
     private val differenceViews = linkedMapOf<String, TextView>()
@@ -77,18 +78,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun ensureDefaultCities() {
-        if (preferences.contains(KEY_CITIES)) return
-        saveCities(DEFAULT_CITIES)
+        viewModel.loadCities()
     }
 
-    private fun cities(): List<String> = preferences.getString(KEY_CITIES, null)
-        ?.split('|')?.filter { it in cityOptions }
-        .orEmpty()
+    private fun cities(): List<String> = viewModel.savedCities.value
 
     private fun saveCities(cities: List<String>) {
-        preferences.edit { putString(KEY_CITIES, cities.distinct().joinToString("|")) }
+        viewModel.saveCities(cities)
         renderCities()
-        WorldClockWidgetProvider.refresh(this)
     }
 
     private fun renderCities() {
