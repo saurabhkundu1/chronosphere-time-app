@@ -1,5 +1,6 @@
 # ChronoSphere
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Deploy F-Droid Repo](https://github.com/saurabhkundu1/Chronosphere/actions/workflows/deploy-fdroid-pages.yml/badge.svg)](https://github.com/saurabhkundu1/Chronosphere/actions/workflows/deploy-fdroid-pages.yml)
 
 ChronoSphere is an offline world clock for saving cities, comparing local times, and keeping up to five clocks on a home-screen widget.
@@ -26,4 +27,4 @@ Push a `vMAJOR.MINOR.PATCH` tag to build and sign the APK, publish it on [GitHub
 
 ## Privacy and license
 
-ChronoSphere works offline and does not request internet access. It is licensed under [Apache License 2.0](WorldClockApp/LICENSE). Report problems in the [issue tracker](https://github.com/saurabhkundu1/chronosphere-time-app/issues).
+ChronoSphere works offline and does not request internet access. It is licensed under the [MIT License](LICENSE). Report problems in the [issue tracker](https://github.com/saurabhkundu1/chronosphere-time-app/issues).
