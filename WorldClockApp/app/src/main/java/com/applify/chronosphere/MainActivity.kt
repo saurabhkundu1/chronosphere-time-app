@@ -56,6 +56,13 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.meetingPlannerButton).setOnClickListener { showMeetingPlanner() }
         ensureDefaultCities()
         renderCities()
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.savedCities.collect {
+                    renderCities()
+                }
+            }
+        }
         updateJob = lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 while (isActive) {
