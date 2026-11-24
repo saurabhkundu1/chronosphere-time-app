@@ -10,6 +10,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.text.format.DateFormat
 import android.view.Gravity
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
@@ -41,6 +42,8 @@ class MainActivity : AppCompatActivity() {
     private val timeViews = linkedMapOf<String, TextView>()
     private val dateViews = linkedMapOf<String, TextView>()
     private val differenceViews = linkedMapOf<String, TextView>()
+    private val dayNightViews = linkedMapOf<String, TextView>()
+    private var timeOffsetHours: Float = 0.0f
     private lateinit var cityContainer: LinearLayout
     private lateinit var localTimeText: TextView
     private lateinit var localDateText: TextView
@@ -54,6 +57,24 @@ class MainActivity : AppCompatActivity() {
         localDateText = findViewById(R.id.localDateText)
         findViewById<Button>(R.id.addCityButton).setOnClickListener { showCityPicker() }
         findViewById<Button>(R.id.meetingPlannerButton).setOnClickListener { showMeetingPlanner() }
+
+        val sliderTimeOffset = findViewById<com.google.android.material.slider.Slider>(R.id.sliderTimeOffset)
+        val btnResetTimeTravel = findViewById<com.google.android.material.button.MaterialButton>(R.id.btnResetTimeTravel)
+        val tvTimeTravelLabel = findViewById<TextView>(R.id.tvTimeTravelLabel)
+
+        sliderTimeOffset?.addOnChangeListener { _, value, fromUser ->
+            if (fromUser) {
+                timeOffsetHours = value
+                updateTimeTravelUI(tvTimeTravelLabel, btnResetTimeTravel)
+                refreshTimes()
+            }
+        }
+        btnResetTimeTravel?.setOnClickListener {
+            sliderTimeOffset?.value = 0f
+            timeOffsetHours = 0f
+            updateTimeTravelUI(tvTimeTravelLabel, btnResetTimeTravel)
+            refreshTimes()
+        }
         ensureDefaultCities()
         renderCities()
         lifecycleScope.launch {
@@ -84,6 +105,18 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
+    private fun updateTimeTravelUI(label: TextView?, resetButton: View?) {
+        if (timeOffsetHours == 0f) {
+            label?.text = getString(R.string.time_travel_label_live)
+            resetButton?.visibility = View.GONE
+        } else {
+            val sign = if (timeOffsetHours > 0) "+" else ""
+            val formatted = if (timeOffsetHours % 1f == 0f) "${timeOffsetHours.toInt()}h" else "${timeOffsetHours}h"
+            label?.text = getString(R.string.time_travel_label_offset, "$sign$formatted")
+            resetButton?.visibility = View.VISIBLE
+        }
+    }
+
     private fun ensureDefaultCities() {
         viewModel.loadCities()
     }
@@ -101,6 +134,7 @@ class MainActivity : AppCompatActivity() {
         timeViews.clear()
         dateViews.clear()
         differenceViews.clear()
+        dayNightViews.clear()
         cities().forEach { zoneId ->
             val card = MaterialCardView(this).apply {
                 radius = dp(20).toFloat()
@@ -120,12 +154,28 @@ class MainActivity : AppCompatActivity() {
                 minimumHeight = dp(92)
             }
             val details = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+            val headerRow = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+            }
             val cityLabel = TextView(this).apply {
                 text = cityName(zoneId)
                 textSize = 17f
                 setTextColor(getColor(R.color.chrono_text))
                 setTypeface(typeface, android.graphics.Typeface.BOLD)
             }
+            val dayNightLabel = TextView(this).apply {
+                textSize = 11f
+                setPadding(dp(6), dp(2), dp(6), dp(2))
+                typeface = android.graphics.Typeface.DEFAULT_BOLD
+            }
+            headerRow.addView(cityLabel)
+            val badgeParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply { marginStart = dp(8) }
+            headerRow.addView(dayNightLabel, badgeParams)
+
             val timeLabel = TextView(this).apply {
                 textSize = 29f
                 gravity = Gravity.END or Gravity.CENTER_VERTICAL
@@ -141,7 +191,7 @@ class MainActivity : AppCompatActivity() {
                 textSize = 12f
                 setTextColor(getColor(R.color.chrono_muted))
             }
-            details.addView(cityLabel)
+            details.addView(headerRow)
             details.addView(dateLabel)
             details.addView(differenceLabel)
             row.addView(details, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
@@ -161,6 +211,7 @@ class MainActivity : AppCompatActivity() {
             timeViews[zoneId] = timeLabel
             dateViews[zoneId] = dateLabel
             differenceViews[zoneId] = differenceLabel
+            dayNightViews[zoneId] = dayNightLabel
         }
         findViewById<TextView>(R.id.emptyMessage)?.visibility =
             if (cities().isEmpty()) android.view.View.VISIBLE else android.view.View.GONE
@@ -168,7 +219,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun refreshTimes() {
-        val now = Date()
+        val offsetMillis = (timeOffsetHours * 3600_000L).toLong()
+        val now = Date(System.currentTimeMillis() + offsetMillis)
         val timePattern = if (DateFormat.is24HourFormat(this)) "HH:mm" else "h:mm a"
         val timeFormatter = SimpleDateFormat(timePattern, Locale.getDefault())
         val dateFormatter = SimpleDateFormat("EEE, d MMM · z", Locale.getDefault())
@@ -185,6 +237,18 @@ class MainActivity : AppCompatActivity() {
             dateViews[zoneId]?.text = getString(R.string.date_city, dateFormatter.format(now), zoneId.replace('_', ' '))
             val differenceMinutes = TimeDifferenceFormatter.minutesBetween(zone, localZone, now.time)
             differenceViews[zoneId]?.text = timeDifferenceLabel(differenceMinutes)
+
+            val cal = Calendar.getInstance(zone).apply { time = now }
+            val hour = cal.get(Calendar.HOUR_OF_DAY)
+            val isDay = hour in 6..17
+            val badge = dayNightViews[zoneId]
+            if (isDay) {
+                badge?.text = getString(R.string.day_indicator)
+                badge?.setTextColor(getColor(R.color.chrono_day))
+            } else {
+                badge?.text = getString(R.string.night_indicator)
+                badge?.setTextColor(getColor(R.color.chrono_night))
+            }
         }
     }
 

@@ -11,4 +11,6 @@
     <color name="chrono_card_stroke">#2E4353</color>
     <color name="chrono_card_time">#EEF5F9</color>
     <color name="chrono_card_date">#9BB0C0</color>
+    <color name="chrono_day">#FFB74D</color>
+    <color name="chrono_night">#9FA8DA</color>
 </resources>

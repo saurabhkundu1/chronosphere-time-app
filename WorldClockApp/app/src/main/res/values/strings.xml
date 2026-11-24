@@ -51,4 +51,9 @@
     </plurals>
     <string name="meeting_city_time_work">%1$s: %2$s · work hours</string>
     <string name="meeting_city_time">%1$s: %2$s</string>
+    <string name="time_travel_label_live">⏱️ Time Scroller · Live</string>
+    <string name="time_travel_label_offset">⏱️ Time Scroller · %1$s offset</string>
+    <string name="time_travel_reset">Reset to Now</string>
+    <string name="day_indicator">☀️ Day</string>
+    <string name="night_indicator">🌙 Night</string>
 </resources>
