@@ -19,8 +19,11 @@ import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.ScrollView
 import android.widget.TextView
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -51,7 +54,25 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContentView(R.layout.activity_main)
+        val mainRoot = findViewById<View>(R.id.mainRoot)
+        val initialLeft = mainRoot.paddingLeft
+        val initialTop = mainRoot.paddingTop
+        val initialRight = mainRoot.paddingRight
+        val initialBottom = mainRoot.paddingBottom
+        ViewCompat.setOnApplyWindowInsetsListener(mainRoot) { v, windowInsets ->
+            val insets = windowInsets.getInsets(
+                WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
+            )
+            v.setPadding(
+                initialLeft + insets.left,
+                initialTop + insets.top,
+                initialRight + insets.right,
+                initialBottom + insets.bottom
+            )
+            windowInsets
+        }
         cityContainer = findViewById(R.id.cityContainer)
         localTimeText = findViewById(R.id.localTimeText)
         localDateText = findViewById(R.id.localDateText)
